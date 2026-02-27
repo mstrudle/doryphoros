@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com https://api.x.ai https://api.deepseek.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';">
+  <title>Doryphoros — Combat Arms Performance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="logo-group">
+      <img src="../assets/doryphoros_logo.svg" height="32" alt="Doryphoros" onerror="this.style.display='none'">
+      <div class="logo-text">
+        <span class="app-name">DORYPHOROS</span>
+        <span class="app-subtitle">COMBAT ARMS PERFORMANCE SYSTEM</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="configure">Configure AI</button>
+    <button class="tab-btn" data-tab="intake">Athlete Intake</button>
+    <button class="tab-btn" data-tab="standards">Standards</button>
+    <button class="tab-btn" data-tab="program">Your Program</button>
+    <button class="tab-btn" data-tab="schedule">4-Week Schedule</button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="app-body">
+
+    <!-- ==================== TAB 1: CONFIGURE AI ==================== -->
+    <div id="tab-configure" class="tab-panel active">
+      <div class="section-header" style="cursor:default;">
+        <span class="section-num">CONFIG</span> AI PROVIDER SETUP
+      </div>
+
+      <div class="provider-grid">
+        <div class="provider-card active" data-provider="anthropic">
+          <div class="provider-name">Claude</div>
+          <div class="provider-model">claude-opus-4-6</div>
+        </div>
+        <div class="provider-card" data-provider="openai">
+          <div class="provider-name">ChatGPT</div>
+          <div class="provider-model">gpt-4o</div>
+        </div>
+        <div class="provider-card" data-provider="google">
+          <div class="provider-name">Gemini</div>
+          <div class="provider-model">gemini-1.5-pro</div>
+        </div>
+        <div class="provider-card" data-provider="xai">
+          <div class="provider-name">Grok</div>
+          <div class="provider-model">grok-2</div>
+        </div>
+        <div class="provider-card" data-provider="deepseek">
+          <div class="provider-name">DeepSeek</div>
+          <div class="provider-model">deepseek-chat</div>
+        </div>
+      </div>
+
+      <div class="ai-config-row">
+        <div class="form-group">
+          <label for="api-key">API Key</label>
+          <input type="password" id="api-key" placeholder="Enter your API key">
+          <span class="field-note">Stored locally. Never transmitted to anyone except your selected AI provider.</span>
+        </div>
+        <div class="form-group">
+          <label for="model-override">Model (Optional)</label>
+          <input type="text" id="model-override" placeholder="Leave blank for provider default">
+        </div>
+      </div>
+
+      <div class="ai-buttons">
+        <button class="btn-outline" id="btn-test-connection">Test Connection</button>
+        <span class="connection-status" id="connection-status"></span>
+      </div>
+
+      <button class="prompt-toggle" id="prompt-toggle">VIEW SYSTEM PROMPT ▼</button>
+      <div class="prompt-viewer" id="prompt-viewer">
+        <pre id="system-prompt-display"></pre>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: ATHLETE INTAKE ==================== -->
+    <div id="tab-intake" class="tab-panel">
+
+      <div class="info-bar">Fill in what you know. Leave the rest blank. The program adapts to whatever data you have.</div>
+
+      <div class="intake-progress">
+        <span class="intake-progress-label">SECTION PROGRESS</span>
+        <div class="intake-progress-bar"><div class="intake-progress-fill" id="intake-progress-fill"></div></div>
+        <span class="intake-progress-label" id="intake-progress-text">0 / 7</span>
+      </div>
+
+      <!-- SECTION 01: Identity & Context -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s01">
+          <span class="section-num">01</span> IDENTITY &amp; CONTEXT
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s01-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input type="number" id="age" placeholder="e.g. 27" min="16" max="70">
+            </div>
+            <div class="form-group">
+              <label for="bodyweight">Bodyweight (lbs)</label>
+              <input type="number" id="bodyweight" placeholder="e.g. 185" min="80" max="400">
+            </div>
+            <div class="form-group">
+              <label for="height">Height</label>
+              <input type="text" id="height" placeholder='e.g. 5&apos;11"'>
+            </div>
+            <div class="form-group">
+              <label for="duty-status">Duty Status</label>
+              <select id="duty-status">
+                <option value="">— Not provided —</option>
+                <option value="Active Duty">Active Duty</option>
+                <option value="Reserve/National Guard">Reserve/National Guard</option>
+                <option value="Veteran">Veteran</option>
+                <option value="Civilian Athlete">Civilian Athlete</option>
+                <option value="Pre-enlistment">Pre-enlistment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ops-tempo">Operational Tempo</label>
+              <select id="ops-tempo">
+                <option value="">— Not provided —</option>
+                <option value="Garrison — full training availability">Garrison — full training availability</option>
+                <option value="Moderate — some field time">Moderate — some field time</option>
+                <option value="High — frequent deployment/field">High — frequent deployment/field</option>
+                <option value="Combat Deployed">Combat Deployed</option>
+                <option value="Post-deployment recovery">Post-deployment recovery</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="training-days">Training Days per Week</label>
+              <select id="training-days">
+                <option value="">— Not provided —</option>
+                <option value="3">3 days</option>
+                <option value="4">4 days</option>
+                <option value="5">5 days</option>
+                <option value="6">6 days</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="session-length">Session Length</label>
+              <select id="session-length">
+                <option value="">— Not provided —</option>
+                <option value="45 minutes">45 minutes</option>
+                <option value="60 minutes">60 minutes</option>
+                <option value="75 minutes">75 minutes</option>
+                <option value="90 minutes">90 minutes</option>
+                <option value="2+ hours">2+ hours</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="equipment">Equipment Access</label>
+              <select id="equipment">
+                <option value="">— Not provided —</option>
+                <option value="Full gym + odd objects (barbell, sandbags, logs, etc.)">Full gym + odd objects</option>
+                <option value="Full commercial gym">Full commercial gym</option>
+                <option value="Barbell + plates only">Barbell + plates only</option>
+                <option value="Dumbbells + bodyweight">Dumbbells + bodyweight</option>
+                <option value="Minimal — pull-up bar + bodyweight">Minimal — pull-up bar + bodyweight</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sleep">Average Sleep (hrs/night)</label>
+              <input type="number" id="sleep" placeholder="e.g. 7" min="2" max="14" step="0.5">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 02: Strength Baselines -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s02">
+          <span class="section-num">02</span> STRENGTH BASELINES
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s02-body">
+          <div class="info-bar">Enter your best recent performance for any lift variant you have data on. Select the specific variation tested — the program normalizes across all variants. If you only have your AFT trap bar score, select that. Leave everything blank if you have no strength data — the AI will build a conservative baseline program.</div>
+
+          <!-- Deadlift / Hip Hinge -->
+          <div class="lift-header">DEADLIFT / HIP HINGE</div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="dl-load">Load (lbs)</label>
+              <input type="number" id="dl-load" placeholder="Blank = not provided">
+            </div>
+            <div class="form-group">
+              <label for="dl-variant">Variant Tested</label>
+              <select id="dl-variant">
+                <option value="">— Not provided —</option>
+                <option value="Conventional Deadlift">Conventional Deadlift</option>
+                <option value="Trap Bar — AFT 3RM">Trap Bar — AFT 3RM</option>
+                <option value="Trap Bar — 1RM">Trap Bar — 1RM</option>
+                <option value="Sumo Deadlift">Sumo Deadlift</option>
+                <option value="Zercher Deadlift">Zercher Deadlift</option>
+                <option value="Rack Pull">Rack Pull</option>
+                <option value="Romanian Deadlift">Romanian Deadlift</option>
+                <option value="Deficit Deadlift">Deficit Deadlift</option>
+                <option value="Snatch-Grip Deadlift">Snatch-Grip Deadlift</option>
+                <option value="Unknown / Estimated">Unknown / Estimated</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="dl-reps">Rep Scheme</label>
+              <select id="dl-reps">
+                <option value="">— Not provided —</option>
+                <option value="1RM (true max)">1RM (true max)</option>
+                <option value="3RM">3RM</option>
+                <option value="5RM">5RM</option>
+                <option value="Estimated 1RM">Estimated 1RM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Squat -->
+          <div class="lift-header">SQUAT</div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="sq-load">Load (lbs)</label>
+              <input type="number" id="sq-load" placeholder="Blank = not provided">
+            </div>
+            <div class="form-group">
+              <label for="sq-variant">Variant</label>
+              <select id="sq-variant">
+                <option value="">— Not provided —</option>
+                <option value="Back Squat (high bar)">Back Squat (high bar)</option>
+                <option value="Back Squat (low bar)">Back Squat (low bar)</option>
+                <option value="Front Squat">Front Squat</option>
+                <option value="Zercher Squat">Zercher Squat</option>
+                <option value="Box Squat">Box Squat</option>
+                <option value="Goblet Squat">Goblet Squat</option>
+                <option value="Safety Bar Squat">Safety Bar Squat</option>
+                <option value="Pin Squat">Pin Squat</option>
+                <option value="Unknown / Estimated">Unknown / Estimated</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sq-reps">Rep Scheme</label>
+              <select id="sq-reps">
+                <option value="">— Not provided —</option>
+                <option value="1RM">1RM</option>
+                <option value="3RM">3RM</option>
+                <option value="5RM">5RM</option>
+                <option value="Estimated 1RM">Estimated 1RM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Horizontal Press -->
+          <div class="lift-header">HORIZONTAL PRESS</div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="bp-load">Load (lbs)</label>
+              <input type="number" id="bp-load" placeholder="Blank = not provided">
+            </div>
+            <div class="form-group">
+              <label for="bp-variant">Variant</label>
+              <select id="bp-variant">
+                <option value="">— Not provided —</option>
+                <option value="Bench Press (competition grip)">Bench Press (competition grip)</option>
+                <option value="Close-Grip Bench">Close-Grip Bench</option>
+                <option value="Floor Press">Floor Press</option>
+                <option value="Pin Press">Pin Press</option>
+                <option value="Incline Press">Incline Press</option>
+                <option value="Log Press">Log Press</option>
+                <option value="Dumbbell Press">Dumbbell Press</option>
+                <option value="Unknown / Estimated">Unknown / Estimated</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="bp-reps">Rep Scheme</label>
+              <select id="bp-reps">
+                <option value="">— Not provided —</option>
+                <option value="1RM">1RM</option>
+                <option value="3RM">3RM</option>
+                <option value="5RM">5RM</option>
+                <option value="Estimated 1RM">Estimated 1RM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Overhead Press -->
+          <div class="lift-header">OVERHEAD PRESS</div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="ohp-load">Load (lbs)</label>
+              <input type="number" id="ohp-load" placeholder="Blank = not provided">
+            </div>
+            <div class="form-group">
+              <label for="ohp-variant">Variant</label>
+              <select id="ohp-variant">
+                <option value="">— Not provided —</option>
+                <option value="Strict Barbell OHP">Strict Barbell OHP</option>
+                <option value="Push Press">Push Press</option>
+                <option value="Log Clean and Press">Log Clean and Press</option>
+                <option value="Log Strict Press">Log Strict Press</option>
+                <option value="Sandbag Clean and Press">Sandbag Clean and Press</option>
+                <option value="Dumbbell OHP">Dumbbell OHP</option>
+                <option value="Unknown / Estimated">Unknown / Estimated</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ohp-reps">Rep Scheme</label>
+              <select id="ohp-reps">
+                <option value="">— Not provided —</option>
+                <option value="1RM">1RM</option>
+                <option value="3RM">3RM</option>
+                <option value="5RM">5RM</option>
+                <option value="Estimated 1RM">Estimated 1RM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Pull & Carry Baselines -->
+          <div class="lift-header">PULL &amp; CARRY BASELINES</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="pullup-max">Strict Pull-Up Max (reps)</label>
+              <input type="number" id="pullup-max" placeholder="Dead-hang, full extension">
+            </div>
+            <div class="form-group">
+              <label for="farmers-load">Farmer's Walk Max Load (lbs/hand)</label>
+              <input type="number" id="farmers-load" placeholder="At 40 yards">
+            </div>
+            <div class="form-group">
+              <label for="sandbag-load">Sandbag Max Load (lbs)</label>
+              <input type="number" id="sandbag-load" placeholder="Heaviest carried or shouldered">
+            </div>
+            <div class="form-group">
+              <label for="grip-strength">Grip Strength (if tested)</label>
+              <input type="text" id="grip-strength" placeholder="e.g. 140 lbs dynamometer">
+            </div>
+            <div class="form-group">
+              <label for="zercher-load">Zercher Carry / Load</label>
+              <input type="text" id="zercher-load" placeholder="e.g. 135 lbs × 30 yards">
+            </div>
+            <div class="form-group">
+              <label for="log-press">Log Press</label>
+              <input type="text" id="log-press" placeholder="e.g. 185 lbs × 3">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="training-age">Training Age</label>
+              <select id="training-age">
+                <option value="">— Not provided —</option>
+                <option value="Under 1 year">Under 1 year</option>
+                <option value="1–2 years">1–2 years</option>
+                <option value="2–4 years">2–4 years</option>
+                <option value="4–7 years">4–7 years</option>
+                <option value="7+ years">7+ years</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="odd-objects">Odd Object / Nonstandard Lift Experience</label>
+              <input type="text" id="odd-objects" placeholder="Sandbags, log press, farmer's walk, Zercher — describe or leave blank">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 03: Running Baselines -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s03">
+          <span class="section-num">03</span> RUNNING BASELINES
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s03-body">
+          <div class="info-bar">Leave blank if you don't have recent run data. The AI will program conservatively for running and build from what you provide.</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="two-mile">2-Mile Best</label>
+              <input type="text" id="two-mile" placeholder="mm:ss format — leave blank if untested">
+            </div>
+            <div class="form-group">
+              <label for="five-mile">5-Mile Best</label>
+              <input type="text" id="five-mile" placeholder="mm:ss (optional)">
+            </div>
+            <div class="form-group">
+              <label for="weekly-miles">Current Weekly Mileage</label>
+              <input type="number" id="weekly-miles" placeholder="miles/week — leave blank if unknown">
+            </div>
+            <div class="form-group">
+              <label for="sprint-40">40m Sprint</label>
+              <input type="text" id="sprint-40" placeholder="seconds">
+            </div>
+            <div class="form-group">
+              <label for="sprint-200">200m Sprint</label>
+              <input type="text" id="sprint-200" placeholder="seconds">
+            </div>
+            <div class="form-group">
+              <label for="sprint-400">400m Sprint</label>
+              <input type="text" id="sprint-400" placeholder="mm:ss">
+            </div>
+            <div class="form-group">
+              <label for="run-phase">Current Run Phase</label>
+              <select id="run-phase">
+                <option value="">— Not sure —</option>
+                <option value="Phase 0 — Base builder (walk/jog intervals)">Phase 0 — Base builder (walk/jog intervals)</option>
+                <option value="Phase 1 — 2-Mile focus">Phase 1 — 2-Mile focus</option>
+                <option value="Phase 2 — 5-Mile focus">Phase 2 — 5-Mile focus</option>
+                <option value="Phase 3 — Maintenance/integration">Phase 3 — Maintenance/integration</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sprint-exp">Sprint Training Experience</label>
+              <select id="sprint-exp">
+                <option value="">— Not provided —</option>
+                <option value="None — never done formal sprint work">None — never done formal sprint work</option>
+                <option value="Some — occasional strides">Some — occasional strides</option>
+                <option value="Trained — structured sprint sessions">Trained — structured sprint sessions</option>
+                <option value="Experienced — formal sprint programming">Experienced — formal sprint programming</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 04: Ruck & Load Carriage -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s04">
+          <span class="section-num">04</span> RUCK &amp; LOAD CARRIAGE
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s04-body">
+          <div class="info-bar">Target: 12 miles / 35 lb dry pack / under 3 hours. Water is additional weight above the dry standard. Leave blank if you have no ruck experience — the program will build from zero.</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="ruck-load">Current Ruck Load (lbs)</label>
+              <input type="number" id="ruck-load" placeholder="Leave blank if no ruck experience">
+            </div>
+            <div class="form-group">
+              <label for="ruck-dist">Comfortable Ruck Distance (miles)</label>
+              <input type="number" id="ruck-dist" placeholder="miles">
+            </div>
+            <div class="form-group">
+              <label for="ruck-pace">Current Ruck Pace (min/mile)</label>
+              <input type="text" id="ruck-pace" placeholder="e.g. 15:00">
+            </div>
+            <div class="form-group">
+              <label for="ruck-longest">Longest Recent Ruck (miles)</label>
+              <input type="number" id="ruck-longest" placeholder="miles">
+            </div>
+            <div class="form-group">
+              <label for="ruck-max">Maximum Load Carried (lbs)</label>
+              <input type="number" id="ruck-max" placeholder="lbs">
+            </div>
+            <div class="form-group">
+              <label for="ruck-exp">Ruck Experience</label>
+              <select id="ruck-exp">
+                <option value="">— Not provided —</option>
+                <option value="None — never rucked">None — never rucked</option>
+                <option value="Novice — occasional rucks under 5 miles">Novice — occasional rucks under 5 miles</option>
+                <option value="Experienced — regular ruck training">Experienced — regular ruck training</option>
+                <option value="Advanced — extensive ruck history">Advanced — extensive ruck history</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 05: Army Fitness Test -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s05">
+          <span class="section-num">05</span> ARMY FITNESS TEST (AFT)
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s05-body">
+          <div class="info-bar">Enter your most recent AFT scores if available. The 3RM trap bar deadlift score is particularly useful for strength baseline estimation.</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="aft-deadlift">3RM Trap Bar Deadlift (lbs)</label>
+              <input type="number" id="aft-deadlift" placeholder="AFT score">
+            </div>
+            <div class="form-group">
+              <label for="aft-pushups">Hand-Release Push-Ups (reps)</label>
+              <input type="number" id="aft-pushups" placeholder="reps">
+            </div>
+            <div class="form-group">
+              <label for="aft-throw">Seated Power Throw (meters)</label>
+              <input type="number" id="aft-throw" placeholder="meters" step="0.1">
+            </div>
+            <div class="form-group">
+              <label for="aft-sdc">Sprint-Drag-Carry Time</label>
+              <input type="text" id="aft-sdc" placeholder="mm:ss">
+            </div>
+            <div class="form-group">
+              <label for="aft-ltk">Leg Tuck / Plank</label>
+              <input type="text" id="aft-ltk" placeholder="reps or time in seconds">
+            </div>
+            <div class="form-group">
+              <label for="aft-run">2-Mile Run Time</label>
+              <input type="text" id="aft-run" placeholder="mm:ss">
+            </div>
+            <div class="form-group">
+              <label for="aft-score">Overall AFT Score</label>
+              <input type="number" id="aft-score" placeholder="total score">
+            </div>
+            <div class="form-group">
+              <label for="aft-date">Last Test Date</label>
+              <input type="date" id="aft-date">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 06: Injuries & Limitations -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s06">
+          <span class="section-num">06</span> INJURIES &amp; LIMITATIONS
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s06-body">
+          <div class="info-bar">Be specific — the more detail you provide, the more precisely the program avoids aggravating existing issues. Leave blank if no current issues.</div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="current-injuries">Current Injuries or Pain Patterns</label>
+              <textarea id="current-injuries" placeholder="Lower back tightness, right knee pain on squats — or leave blank"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="past-injuries">Previous Surgeries or Structural Issues</label>
+              <textarea id="past-injuries" placeholder="ACL repair 2022, herniated L4-L5 — or leave blank"></textarea>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="movement-restrictions">Movement Restrictions</label>
+              <input type="text" id="movement-restrictions" placeholder="No overhead pressing, limited spinal flexion — or leave blank">
+            </div>
+            <div class="form-group">
+              <label for="profile-status">Medical Profile / Profile Status</label>
+              <select id="profile-status">
+                <option value="">— Not provided —</option>
+                <option value="No profile — full duty">No profile — full duty</option>
+                <option value="Limited profile — some restrictions">Limited profile — some restrictions</option>
+                <option value="Permanent profile">Permanent profile</option>
+                <option value="Currently awaiting medical clearance">Currently awaiting medical clearance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 07: Goals & Priorities -->
+      <div class="intake-section">
+        <div class="section-header" data-section="s07">
+          <span class="section-num">07</span> GOALS &amp; PRIORITIES
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div class="section-body" id="s07-body">
+          <div class="info-bar">These shape the emphasis and prioritization of your program. Leave blank if unsure — the AI will build a balanced program.</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="primary-goal">Primary Goal</label>
+              <select id="primary-goal">
+                <option value="">— Not sure —</option>
+                <option value="Improve AFT score across all events">Improve AFT score across all events</option>
+                <option value="Selection prep (SFAS / RASP / MARSOC)">Selection prep (SFAS / RASP / MARSOC)</option>
+                <option value="Maximize strength first">Maximize strength first</option>
+                <option value="Improve run times first">Improve run times first</option>
+                <option value="Improve ruck performance">Improve ruck performance</option>
+                <option value="Balanced development — all domains">Balanced development — all domains</option>
+                <option value="Post-deployment fitness rebuild">Post-deployment fitness rebuild</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="timeline">Target Timeline</label>
+              <select id="timeline">
+                <option value="">— Not provided —</option>
+                <option value="8 weeks">8 weeks</option>
+                <option value="12 weeks">12 weeks</option>
+                <option value="16 weeks">16 weeks</option>
+                <option value="6 months">6 months</option>
+                <option value="1 year — long-term build">1 year — long-term build</option>
+                <option value="Open-ended — just build the plan">Open-ended — just build the plan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="event-date">Specific Event or Test Date</label>
+              <input type="text" id="event-date" placeholder="SFAS Selection — Aug 2025, AFT — Mar 2025, etc.">
+            </div>
+            <div class="form-group">
+              <label for="body-comp">Body Composition Goal</label>
+              <select id="body-comp">
+                <option value="">— Not provided —</option>
+                <option value="Maintain current weight">Maintain current weight</option>
+                <option value="Lose 5–10 lbs (fat loss)">Lose 5–10 lbs (fat loss)</option>
+                <option value="Lose 10+ lbs">Lose 10+ lbs</option>
+                <option value="Gain muscle (bulk)">Gain muscle (bulk)</option>
+                <option value="Not a priority — performance only">Not a priority — performance only</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:20px;">
+            <label for="additional-context">Anything else the AI should know</label>
+            <textarea id="additional-context" placeholder="Deployed schedule, irregular sleep, specific weaknesses, gear access, etc."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERATE BUTTON -->
+      <div class="generate-area">
+        <button class="btn-primary" id="btn-generate" disabled>GENERATE PROGRAM</button>
+        <span class="generate-status" id="generate-status"></span>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 3: STANDARDS ==================== -->
+    <div id="tab-standards" class="tab-panel">
+      <div class="section-header" style="cursor:default;">
+        <span class="section-num">TARGETS</span> PERFORMANCE STANDARDS
+      </div>
+
+      <table class="standards-table">
+        <thead>
+          <tr><th>Event</th><th>Target</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Deadlift</td><td>2.0–2.5× bodyweight</td></tr>
+          <tr><td>Squat</td><td>2.0× bodyweight</td></tr>
+          <tr><td>Bench Press</td><td>1.5× bodyweight</td></tr>
+          <tr><td>Overhead Press</td><td>1.0× bodyweight</td></tr>
+          <tr><td>Pull-Ups</td><td>15–20 strict reps</td></tr>
+          <tr><td>2-Mile Run</td><td>≤12:30</td></tr>
+          <tr><td>5-Mile Run</td><td>≤35:00</td></tr>
+          <tr><td>400m Sprint</td><td>≤62 seconds</td></tr>
+          <tr><td>12-Mile Ruck</td><td>≤3:00 · 35 lb dry · water additional</td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-header" style="cursor:default;">
+        <span class="section-num">TIERS</span> ATHLETE TIER SYSTEM
+      </div>
+
+      <div class="tier-grid">
+        <div class="tier-card">
+          <div class="tier-label font-display">TIER 1</div>
+          <div class="tier-sublabel">COMBAT STANDARD</div>
+          <div class="tier-entry">Entry: AFT 70 pts/event. DL &lt;1.5×BW. 2-mile &gt;15:00. Pull-ups &lt;8.</div>
+          <div class="tier-advance-label">ADVANCE WHEN</div>
+          <div class="tier-advance">2-mile &lt;14:00, DL 1.75×BW, 10 pull-ups.</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-label font-display">TIER 2</div>
+          <div class="tier-sublabel">TACTICAL ATHLETE</div>
+          <div class="tier-entry">Entry: DL 1.5–2.0×BW. 2-mile 13:00–14:30. Pull-ups 10–14.</div>
+          <div class="tier-advance-label">ADVANCE WHEN</div>
+          <div class="tier-advance">2-mile &lt;13:00, 5-mile &lt;40:00, DL 2.0×BW, squat 1.75×BW, 15 pull-ups.</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-label font-display">TIER 3</div>
+          <div class="tier-sublabel">HIGH PERFORMER</div>
+          <div class="tier-entry">Entry: DL 2.0–2.3×BW. 2-mile &lt;13:00. 5-mile &lt;37:00. Pull-ups 15–18.</div>
+          <div class="tier-advance-label">ADVANCE WHEN</div>
+          <div class="tier-advance">2-mile &lt;12:30, 5-mile &lt;35:00, 400m &lt;65s, 18+ pull-ups.</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-label font-display">TIER 4</div>
+          <div class="tier-sublabel">ELITE OPERATOR</div>
+          <div class="tier-entry">DL 2.0–2.5×BW. Squat 2.0×. Bench 1.5×. OHP 1.0×. Pull-ups 15–20. 2-mile &lt;12:30. 5-mile &lt;35:00. 400m &lt;62s. 12-mile ruck &lt;3:00.</div>
+          <div class="tier-advance-label">CEILING</div>
+          <div class="tier-advance">This is the standard. Maintain and refine.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: YOUR PROGRAM ==================== -->
+    <div id="tab-program" class="tab-panel">
+      <div id="program-content">
+        <div class="program-placeholder">
+          <div class="placeholder-title">NO PROGRAM GENERATED</div>
+          <div class="placeholder-text">Configure your AI provider and fill in athlete data, then generate your program from the Athlete Intake tab.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: 4-WEEK SCHEDULE ==================== -->
+    <div id="tab-schedule" class="tab-panel">
+      <div id="schedule-content">
+        <div class="calendar-placeholder" id="calendar-placeholder">
+          <div class="placeholder-title">NO SCHEDULE AVAILABLE</div>
+          <div class="placeholder-text">Generate a program first. The 4-week calendar will be populated automatically from the AI output.</div>
+        </div>
+
+        <div id="calendar-active" style="display:none;">
+          <div class="section-header" style="cursor:default;">
+            <span class="section-num">CALENDAR</span> 4-WEEK TRAINING SCHEDULE
+          </div>
+
+          <div class="calendar-controls">
+            <div class="form-group">
+              <label for="start-date">START DATE</label>
+              <input type="date" id="start-date">
+            </div>
+            <button class="btn-outline" id="btn-gcal">Add to Google Calendar</button>
+            <button class="btn-outline" id="btn-ical">Download .ics</button>
+          </div>
+
+          <div class="info-bar">Google Calendar events include a 12-hour and 1-hour reminder. iCal events include a 1-day and 1-hour alarm. Adjust after import if needed.</div>
+
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    Doryphoros · Combat Arms Performance System · Wendler · Westside · Dinosaur Training · Doggcrapp · Mountain Dog · Pavel · LeanGains · HTK Combat Runner · Special Forces Doctrine
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
