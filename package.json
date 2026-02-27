@@ -1,0 +1,22 @@
+{
+  "name": "doryphoros",
+  "version": "0.1.0",
+  "description": "Combat Arms Performance System",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mstrudle/doryphoros.git"
+  },
+  "author": "mstrudle",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0"
+  }
+}

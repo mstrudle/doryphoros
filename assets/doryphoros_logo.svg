@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <circle cx="64" cy="64" r="62" fill="#0a0a0a" stroke="#e8dfc8" stroke-width="2"/>
+  <g fill="#e8dfc8" transform="translate(64,64) scale(0.45)">
+    <!-- Stylized spear-bearer silhouette -->
+    <ellipse cx="0" cy="-85" rx="14" ry="17"/>
+    <rect x="-12" y="-68" width="24" height="40" rx="4"/>
+    <rect x="-16" y="-30" width="12" height="50" rx="3" transform="rotate(-5)"/>
+    <rect x="4" y="-30" width="12" height="50" rx="3" transform="rotate(5)"/>
+    <rect x="-10" y="18" width="10" height="55" rx="3" transform="rotate(3)"/>
+    <rect x="0" y="18" width="10" height="55" rx="3" transform="rotate(-3)"/>
+    <!-- Spear -->
+    <rect x="22" y="-110" width="3" height="140" rx="1" transform="rotate(8)"/>
+    <polygon points="22,-112 27,-112 24.5,-125" transform="rotate(8)"/>
+  </g>
+</svg>
